@@ -57,33 +57,7 @@ const Index: React.FC = () => {
             </CardContent>
           </Card>
 
-          <Card className="glass-card">
-            <CardHeader>
-              <CardTitle>Área do Usuário</CardTitle>
-              <CardDescription>
-                {user ? "Gerencie seus pedidos" : "Acesse sua conta para gerenciar pedidos"}
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="flex justify-center items-center pb-2">
-              <Package className="h-16 w-16 text-primary" />
-            </CardContent>
-            <CardFooter className="flex justify-center pt-2">
-              {user ? (
-                <div className="space-x-4">
-                  <Button onClick={() => navigate('/orders')}>
-                    Meus Pedidos
-                  </Button>
-                  <Button variant="outline" onClick={() => navigate('/order/new')}>
-                    Novo Pedido
-                  </Button>
-                </div>
-              ) : (
-                <Button onClick={() => navigate('/login')}>
-                  Login / Cadastro
-                </Button>
-              )}
-            </CardFooter>
-          </Card>
+         
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 w-full max-w-4xl">
