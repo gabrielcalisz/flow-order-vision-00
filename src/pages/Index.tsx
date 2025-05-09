@@ -24,14 +24,14 @@ const Index: React.FC = () => {
       <div className="flex flex-col items-center justify-center text-center py-12">
         <img 
           src="/lovable-uploads/048c0548-c909-453f-9fcc-95a63daf7f3e.png" 
-          alt="FastTracker Logo" 
+          alt="Logo" 
           className="h-24 mb-6"
         />
         <h1 className="text-4xl md:text-5xl font-bold mb-4">
-          Sistema de Gerenciamento de Entregas
+          Sistema de Entregas
         </h1>
         <p className="text-xl text-muted-foreground max-w-2xl mb-8">
-          Plataforma completa para cadastro, gerenciamento e rastreamento de pedidos
+          Plataforma completa para rastreamento de pedidos
         </p>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full max-w-4xl mb-12">
