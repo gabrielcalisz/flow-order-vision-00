@@ -75,29 +75,29 @@ export const OrderProvider: React.FC<{ children: React.ReactNode }> = ({ childre
                 steps: order.tracking_steps.map((step: any) => {
                   switch (step.status_type) {
                     case 'processed':
-                      return { type: 'processed' };
+                      return { type: 'processed' as const };
                     case 'forwarded':
                       return { 
-                        type: 'forwarded', 
+                        type: 'forwarded' as const, 
                         city: step.destination_city 
                       };
                     case 'inTransit':
                       return { 
-                        type: 'inTransit', 
+                        type: 'inTransit' as const, 
                         origin: step.origin_city, 
                         destination: step.destination_city 
                       };
                     case 'cancelled':
-                      return { type: 'cancelled' };
+                      return { type: 'cancelled' as const };
                     case 'outForDelivery':
                       return { 
-                        type: 'outForDelivery', 
+                        type: 'outForDelivery' as const, 
                         city: step.delivery_city 
                       };
                     case 'delivered':
-                      return { type: 'delivered' };
+                      return { type: 'delivered' as const };
                     default:
-                      return { type: 'processed' };
+                      return { type: 'processed' as const };
                   }
                 }).sort((a: any, b: any) => {
                   return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
@@ -162,29 +162,29 @@ export const OrderProvider: React.FC<{ children: React.ReactNode }> = ({ childre
             steps: data.tracking_steps.map((step: any) => {
               switch (step.status_type) {
                 case 'processed':
-                  return { type: 'processed' };
+                  return { type: 'processed' as const };
                 case 'forwarded':
                   return { 
-                    type: 'forwarded', 
+                    type: 'forwarded' as const, 
                     city: step.destination_city 
                   };
                 case 'inTransit':
                   return { 
-                    type: 'inTransit', 
+                    type: 'inTransit' as const, 
                     origin: step.origin_city, 
                     destination: step.destination_city 
                   };
                 case 'cancelled':
-                  return { type: 'cancelled' };
+                  return { type: 'cancelled' as const };
                 case 'outForDelivery':
                   return { 
-                    type: 'outForDelivery', 
+                    type: 'outForDelivery' as const, 
                     city: step.delivery_city 
                   };
                 case 'delivered':
-                  return { type: 'delivered' };
+                  return { type: 'delivered' as const };
                 default:
-                  return { type: 'processed' };
+                  return { type: 'processed' as const };
               }
             }).sort((a: any, b: any) => {
               return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
@@ -230,7 +230,7 @@ export const OrderProvider: React.FC<{ children: React.ReactNode }> = ({ childre
           free_shipping: order.product.freeShipping,
           tracking_code: order.tracking.trackingCode,
           tracking_company: order.tracking.company,
-          estimated_delivery_date: order.tracking.estimatedDeliveryDate,
+          estimated_delivery_date: order.tracking.estimatedDeliveryDate ? order.tracking.estimatedDeliveryDate.toISOString().split('T')[0] : null,
         })
         .select()
         .single();
@@ -242,7 +242,7 @@ export const OrderProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         const trackingStepsData = order.tracking.steps.map(step => {
           const baseStep = {
             order_id: orderData.id,
-            status_type: step.type as any,
+            status_type: step.type,
           };
           
           switch (step.type) {
@@ -333,29 +333,29 @@ export const OrderProvider: React.FC<{ children: React.ReactNode }> = ({ childre
             steps: order.tracking_steps.map((step: any) => {
               switch (step.status_type) {
                 case 'processed':
-                  return { type: 'processed' };
+                  return { type: 'processed' as const };
                 case 'forwarded':
                   return { 
-                    type: 'forwarded', 
+                    type: 'forwarded' as const, 
                     city: step.destination_city 
                   };
                 case 'inTransit':
                   return { 
-                    type: 'inTransit', 
+                    type: 'inTransit' as const, 
                     origin: step.origin_city, 
                     destination: step.destination_city 
                   };
                 case 'cancelled':
-                  return { type: 'cancelled' };
+                  return { type: 'cancelled' as const };
                 case 'outForDelivery':
                   return { 
-                    type: 'outForDelivery', 
+                    type: 'outForDelivery' as const, 
                     city: step.delivery_city 
                   };
                 case 'delivered':
-                  return { type: 'delivered' };
+                  return { type: 'delivered' as const };
                 default:
-                  return { type: 'processed' };
+                  return { type: 'processed' as const };
               }
             }).sort((a: any, b: any) => {
               return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
@@ -403,7 +403,7 @@ export const OrderProvider: React.FC<{ children: React.ReactNode }> = ({ childre
           free_shipping: updatedOrder.product.freeShipping,
           tracking_code: updatedOrder.tracking.trackingCode,
           tracking_company: updatedOrder.tracking.company,
-          estimated_delivery_date: updatedOrder.tracking.estimatedDeliveryDate,
+          estimated_delivery_date: updatedOrder.tracking.estimatedDeliveryDate ? updatedOrder.tracking.estimatedDeliveryDate.toISOString().split('T')[0] : null,
         })
         .eq('id', updatedOrder.id);
       
@@ -451,7 +451,7 @@ export const OrderProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         const trackingStepsData = updatedOrder.tracking.steps.map(step => {
           const baseStep = {
             order_id: updatedOrder.id,
-            status_type: step.type as any,
+            status_type: step.type,
           };
           
           switch (step.type) {
@@ -517,29 +517,29 @@ export const OrderProvider: React.FC<{ children: React.ReactNode }> = ({ childre
             steps: order.tracking_steps.map((step: any) => {
               switch (step.status_type) {
                 case 'processed':
-                  return { type: 'processed' };
+                  return { type: 'processed' as const };
                 case 'forwarded':
                   return { 
-                    type: 'forwarded', 
+                    type: 'forwarded' as const, 
                     city: step.destination_city 
                   };
                 case 'inTransit':
                   return { 
-                    type: 'inTransit', 
+                    type: 'inTransit' as const, 
                     origin: step.origin_city, 
                     destination: step.destination_city 
                   };
                 case 'cancelled':
-                  return { type: 'cancelled' };
+                  return { type: 'cancelled' as const };
                 case 'outForDelivery':
                   return { 
-                    type: 'outForDelivery', 
+                    type: 'outForDelivery' as const, 
                     city: step.delivery_city 
                   };
                 case 'delivered':
-                  return { type: 'delivered' };
+                  return { type: 'delivered' as const };
                 default:
-                  return { type: 'processed' };
+                  return { type: 'processed' as const };
               }
             }).sort((a: any, b: any) => {
               return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();

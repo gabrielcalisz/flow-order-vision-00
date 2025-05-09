@@ -222,7 +222,7 @@ const TrackingForm: React.FC<TrackingFormProps> = ({ tracking, setTracking }) =>
           <div className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="statusType">Tipo de Status</Label>
-              <Select value={statusType} onValueChange={setStatusType}>
+              <Select value={statusType} onValueChange={(value: string) => setStatusType(value)}>
                 <SelectTrigger>
                   <SelectValue placeholder="Selecione o tipo de status" />
                 </SelectTrigger>
@@ -242,7 +242,7 @@ const TrackingForm: React.FC<TrackingFormProps> = ({ tracking, setTracking }) =>
             {statusType === 'forwarded' && (
               <div className="space-y-2">
                 <Label htmlFor="cityDestination">Capital de Destino</Label>
-                <Select value={cityDestination} onValueChange={setCityDestination}>
+                <Select value={cityDestination} onValueChange={(value: BrazilianCapital) => setCityDestination(value)}>
                   <SelectTrigger>
                     <SelectValue placeholder="Selecione a capital" />
                   </SelectTrigger>
@@ -263,7 +263,7 @@ const TrackingForm: React.FC<TrackingFormProps> = ({ tracking, setTracking }) =>
               <>
                 <div className="space-y-2">
                   <Label htmlFor="cityOrigin">Capital de Origem</Label>
-                  <Select value={cityOrigin} onValueChange={setCityOrigin}>
+                  <Select value={cityOrigin} onValueChange={(value: BrazilianCapital) => setCityOrigin(value)}>
                     <SelectTrigger>
                       <SelectValue placeholder="Selecione a capital de origem" />
                     </SelectTrigger>
@@ -280,7 +280,7 @@ const TrackingForm: React.FC<TrackingFormProps> = ({ tracking, setTracking }) =>
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="cityDestination">Capital de Destino</Label>
-                  <Select value={cityDestination} onValueChange={setCityDestination}>
+                  <Select value={cityDestination} onValueChange={(value: BrazilianCapital) => setCityDestination(value)}>
                     <SelectTrigger>
                       <SelectValue placeholder="Selecione a capital de destino" />
                     </SelectTrigger>
