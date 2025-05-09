@@ -1,64 +1,48 @@
 
-import React from "react";
-import { Customer } from "@/types";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { User } from "lucide-react";
+import React from 'react';
+import { Customer } from '@/types';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 interface CustomerFormProps {
   customer: Customer;
-  setCustomer: (customer: Customer) => void;
+  setCustomer: React.Dispatch<React.SetStateAction<Customer>>;
 }
 
 const CustomerForm: React.FC<CustomerFormProps> = ({ customer, setCustomer }) => {
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement>,
-    field: keyof Customer
-  ) => {
-    setCustomer({
-      ...customer,
-      [field]: e.target.value,
-    });
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setCustomer(prev => ({ ...prev, [name]: value }));
   };
 
   return (
-    <Card className="glass-card animate-fade-in">
-      <CardHeader className="flex flex-row items-center gap-4">
-        <div className="bg-brand-500/10 p-3 rounded-full">
-          <User className="h-6 w-6 text-brand-500" />
-        </div>
-        <div>
-          <CardTitle>👤 Cliente</CardTitle>
-          <CardDescription>Informações do cliente</CardDescription>
-        </div>
+    <Card className="glass-card">
+      <CardHeader>
+        <CardTitle>Informações do Cliente</CardTitle>
       </CardHeader>
-      <CardContent className="grid gap-4">
+      <CardContent className="space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
             <Label htmlFor="firstName">Nome</Label>
             <Input
               id="firstName"
+              name="firstName"
               value={customer.firstName}
-              onChange={(e) => handleChange(e, "firstName")}
+              onChange={handleChange}
               placeholder="Nome"
-              className="w-full"
+              required
             />
           </div>
           <div className="space-y-2">
             <Label htmlFor="lastName">Sobrenome</Label>
             <Input
               id="lastName"
+              name="lastName"
               value={customer.lastName}
-              onChange={(e) => handleChange(e, "lastName")}
+              onChange={handleChange}
               placeholder="Sobrenome"
-              className="w-full"
+              required
             />
           </div>
         </div>
@@ -68,20 +52,22 @@ const CustomerForm: React.FC<CustomerFormProps> = ({ customer, setCustomer }) =>
             <Label htmlFor="phone">Telefone</Label>
             <Input
               id="phone"
+              name="phone"
               value={customer.phone}
-              onChange={(e) => handleChange(e, "phone")}
-              placeholder="(XX) XXXXX-XXXX"
-              className="w-full"
+              onChange={handleChange}
+              placeholder="(00) 00000-0000"
+              required
             />
           </div>
           <div className="space-y-2">
             <Label htmlFor="cpf">CPF</Label>
             <Input
               id="cpf"
+              name="cpf"
               value={customer.cpf}
-              onChange={(e) => handleChange(e, "cpf")}
-              placeholder="XXX.XXX.XXX-XX"
-              className="w-full"
+              onChange={handleChange}
+              placeholder="000.000.000-00"
+              required
             />
           </div>
         </div>
@@ -90,10 +76,11 @@ const CustomerForm: React.FC<CustomerFormProps> = ({ customer, setCustomer }) =>
           <Label htmlFor="address">Endereço</Label>
           <Input
             id="address"
+            name="address"
             value={customer.address}
-            onChange={(e) => handleChange(e, "address")}
-            placeholder="Rua, Número, Complemento"
-            className="w-full"
+            onChange={handleChange}
+            placeholder="Rua, número, complemento"
+            required
           />
         </div>
 
@@ -102,30 +89,33 @@ const CustomerForm: React.FC<CustomerFormProps> = ({ customer, setCustomer }) =>
             <Label htmlFor="city">Cidade</Label>
             <Input
               id="city"
+              name="city"
               value={customer.city}
-              onChange={(e) => handleChange(e, "city")}
+              onChange={handleChange}
               placeholder="Cidade"
-              className="w-full"
+              required
             />
           </div>
           <div className="space-y-2">
             <Label htmlFor="state">Estado</Label>
             <Input
               id="state"
+              name="state"
               value={customer.state}
-              onChange={(e) => handleChange(e, "state")}
+              onChange={handleChange}
               placeholder="Estado"
-              className="w-full"
+              required
             />
           </div>
           <div className="space-y-2">
             <Label htmlFor="zipCode">CEP</Label>
             <Input
               id="zipCode"
+              name="zipCode"
               value={customer.zipCode}
-              onChange={(e) => handleChange(e, "zipCode")}
-              placeholder="XXXXX-XXX"
-              className="w-full"
+              onChange={handleChange}
+              placeholder="00000-000"
+              required
             />
           </div>
         </div>

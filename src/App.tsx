@@ -10,6 +10,7 @@ import Index from "./pages/Index";
 import Login from "./pages/Login";
 import OrderForm from "./pages/OrderForm";
 import OrdersList from "./pages/OrdersList";
+import TrackingPage from "./pages/TrackingPage";
 import NotFound from "./pages/NotFound";
 import Navbar from "./components/Navbar";
 
@@ -44,6 +45,7 @@ const AppRoutes = () => {
             <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/login" element={<Login />} />
+              <Route path="/tracking" element={<TrackingPage />} />
               <Route 
                 path="/orders" 
                 element={

@@ -1,73 +1,79 @@
 
-import React from "react";
-import { TrackingStep } from "@/types";
+import React from 'react';
+import { TrackingStep } from '@/types';
+import { CheckCircle2, Circle, MapPin, PackageCheck, PackageX, Truck } from 'lucide-react';
 import { cn } from "@/lib/utils";
-import { Check, PackageCheck, Truck, Building, X, Package } from "lucide-react";
 
 interface TrackingTimelineProps {
   steps: TrackingStep[];
+  simplified?: boolean;
 }
 
-const TrackingTimeline: React.FC<TrackingTimelineProps> = ({ steps }) => {
-  const getStepIcon = (step: TrackingStep) => {
-    switch (step.type) {
-      case "processed":
-        return <Check className="h-5 w-5 text-green-500" />;
-      case "forwarded":
-        return <Building className="h-5 w-5 text-blue-500" />;
-      case "inTransit":
-        return <Truck className="h-5 w-5 text-amber-500" />;
-      case "outForDelivery":
-        return <Package className="h-5 w-5 text-violet-500" />;
-      case "delivered":
-        return <PackageCheck className="h-5 w-5 text-green-500" />;
-      case "cancelled":
-        return <X className="h-5 w-5 text-red-500" />;
-      default:
-        return <Check className="h-5 w-5" />;
-    }
-  };
-
-  const getStepTitle = (step: TrackingStep) => {
-    switch (step.type) {
-      case "processed":
-        return "✅ Pedido Processado";
-      case "forwarded":
-        return `🏢 Pedido encaminhado para centro de distribuição em ${step.city}`;
-      case "inTransit":
-        return `🚚 Pedido em trânsito de ${step.origin} para ${step.destination}`;
-      case "outForDelivery":
-        return `📬 Pedido saiu para entrega em ${step.city}`;
-      case "delivered":
-        return "📦 Produto Entregue";
-      case "cancelled":
-        return "❌ Pedido Cancelado";
-      default:
-        return "Atualização de status";
-    }
-  };
+const TrackingTimeline: React.FC<TrackingTimelineProps> = ({ steps, simplified = false }) => {
+  const sortedSteps = [...steps];
 
   return (
-    <div className="space-y-4">
-      {steps.map((step, index) => (
-        <div 
-          key={index} 
-          className={cn(
-            "timeline-container",
-            index === steps.length - 1 && "border-l-dashed"
-          )}
-        >
-          <span className="timeline-dot flex items-center justify-center bg-white">
-            {getStepIcon(step)}
-          </span>
-          <div className="timeline-content">
-            <p className="font-medium">{getStepTitle(step)}</p>
-            <p className="text-sm text-muted-foreground">
-              {new Date().toLocaleDateString("pt-BR")} {/* Em uma app real, viria da API */}
-            </p>
-          </div>
-        </div>
-      ))}
+    <div className="relative">
+      <div className="absolute left-4 top-0 bottom-0 w-px bg-border" />
+
+      <div className="space-y-8">
+        {sortedSteps.map((step, index) => {
+          let icon = <Circle />;
+          let title = '';
+          let description = '';
+          let isCompleted = true;
+
+          switch (step.type) {
+            case 'processed':
+              icon = <PackageCheck className="h-8 w-8 text-primary" />;
+              title = 'Pedido Processado';
+              description = 'Seu pedido foi processado e está sendo preparado';
+              break;
+            case 'forwarded':
+              icon = <MapPin className="h-8 w-8 text-amber-500" />;
+              title = 'Encaminhado';
+              description = `Encaminhado para centro de distribuição em ${step.city}`;
+              break;
+            case 'inTransit':
+              icon = <Truck className="h-8 w-8 text-blue-500" />;
+              title = 'Em Trânsito';
+              description = `Em trânsito de ${step.origin} para ${step.destination}`;
+              break;
+            case 'cancelled':
+              icon = <PackageX className="h-8 w-8 text-destructive" />;
+              title = 'Pedido Cancelado';
+              description = 'Seu pedido foi cancelado';
+              break;
+            case 'outForDelivery':
+              icon = <Truck className="h-8 w-8 text-blue-500" />;
+              title = 'Saiu para Entrega';
+              description = `Saiu para entrega em ${step.city}`;
+              break;
+            case 'delivered':
+              icon = <CheckCircle2 className="h-8 w-8 text-green-500" />;
+              title = 'Entregue';
+              description = 'Seu pedido foi entregue com sucesso';
+              break;
+          }
+
+          return (
+            <div key={index} className="relative pl-10">
+              <span className={cn(
+                "absolute left-0 flex h-8 w-8 items-center justify-center", 
+              )}>
+                {icon}
+              </span>
+
+              <div className="ml-4 space-y-1">
+                <p className="text-sm font-medium leading-none">{title}</p>
+                {!simplified && (
+                  <p className="text-sm text-muted-foreground">{description}</p>
+                )}
+              </div>
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 };

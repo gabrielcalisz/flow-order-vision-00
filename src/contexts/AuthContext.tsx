@@ -1,6 +1,7 @@
 
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { User } from "@/types";
+import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
 interface AuthContextType {
@@ -21,38 +22,83 @@ export const useAuth = () => {
   return context;
 };
 
+function cleanupAuthState() {
+  // Remove standard auth tokens
+  localStorage.removeItem('supabase.auth.token');
+  // Remove all Supabase auth keys from localStorage
+  Object.keys(localStorage).forEach((key) => {
+    if (key.startsWith('supabase.auth.') || key.includes('sb-')) {
+      localStorage.removeItem(key);
+    }
+  });
+  // Remove from sessionStorage if in use
+  Object.keys(sessionStorage || {}).forEach((key) => {
+    if (key.startsWith('supabase.auth.') || key.includes('sb-')) {
+      sessionStorage.removeItem(key);
+    }
+  });
+}
+
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Check if user is logged in
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-    }
-    setIsLoading(false);
+    // Set up auth state listener FIRST
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        if (session?.user) {
+          const userData: User = {
+            id: session.user.id,
+            email: session.user.email || "",
+            name: session.user.user_metadata?.name || session.user.email?.split("@")[0] || "",
+          };
+          setUser(userData);
+        } else {
+          setUser(null);
+        }
+      }
+    );
+
+    // THEN check for existing session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session?.user) {
+        const userData: User = {
+          id: session.user.id,
+          email: session.user.email || "",
+          name: session.user.user_metadata?.name || session.user.email?.split("@")[0] || "",
+        };
+        setUser(userData);
+      }
+      setIsLoading(false);
+    });
+
+    return () => subscription.unsubscribe();
   }, []);
 
   const login = async (email: string, password: string) => {
     setIsLoading(true);
     try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      // Clean up existing auth state
+      cleanupAuthState();
       
-      // In a real app, you'd validate credentials with a backend
-      // For demo purposes, we'll just accept any login
-      const mockUser: User = {
-        id: `user_${new Date().getTime()}`,
+      // Try global sign out first
+      try {
+        await supabase.auth.signOut({ scope: 'global' });
+      } catch (err) {
+        // Continue even if this fails
+      }
+      
+      const { data, error } = await supabase.auth.signInWithPassword({
         email,
-        name: email.split("@")[0],
-      };
+        password
+      });
       
-      setUser(mockUser);
-      localStorage.setItem("user", JSON.stringify(mockUser));
+      if (error) throw error;
+      
       toast.success("Login realizado com sucesso!");
-    } catch (error) {
-      toast.error("Falha ao realizar login.");
+    } catch (error: any) {
+      toast.error(`Falha ao realizar login: ${error.message}`);
       throw error;
     } finally {
       setIsLoading(false);
@@ -62,33 +108,53 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const register = async (name: string, email: string, password: string) => {
     setIsLoading(true);
     try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      // Clean up existing auth state
+      cleanupAuthState();
       
-      // In a real app, you'd register with a backend
-      // For demo purposes, we'll just create a mock user
-      const mockUser: User = {
-        id: `user_${new Date().getTime()}`,
+      // Try global sign out first
+      try {
+        await supabase.auth.signOut({ scope: 'global' });
+      } catch (err) {
+        // Continue even if this fails
+      }
+      
+      const { data, error } = await supabase.auth.signUp({
         email,
-        name,
-      };
+        password,
+        options: {
+          data: {
+            name,
+          }
+        }
+      });
       
-      setUser(mockUser);
-      localStorage.setItem("user", JSON.stringify(mockUser));
+      if (error) throw error;
+      
       toast.success("Cadastro realizado com sucesso!");
-    } catch (error) {
-      toast.error("Falha ao realizar cadastro.");
+    } catch (error: any) {
+      toast.error(`Falha ao realizar cadastro: ${error.message}`);
       throw error;
     } finally {
       setIsLoading(false);
     }
   };
 
-  const logout = () => {
-    setUser(null);
-    localStorage.removeItem("user");
-    localStorage.removeItem("orders");
-    toast.info("Logout realizado com sucesso.");
+  const logout = async () => {
+    try {
+      // Clean up auth state
+      cleanupAuthState();
+      
+      // Attempt global sign out
+      await supabase.auth.signOut({ scope: 'global' });
+      
+      toast.info("Logout realizado com sucesso.");
+      
+      // Force page reload for a clean state
+      window.location.href = '/login';
+    } catch (error) {
+      console.error("Logout error:", error);
+      toast.error("Falha ao realizar logout.");
+    }
   };
 
   return (

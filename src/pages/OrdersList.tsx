@@ -27,7 +27,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { format } from "date-fns";
-import { Package, MoreHorizontal, PackageCheck, CheckCheck, X, Truck } from "lucide-react";
+import { Package, MoreHorizontal, PackageCheck, CheckCheck, X, Truck, Share } from "lucide-react";
+import { toast } from "sonner";
 
 const OrdersList: React.FC = () => {
   const navigate = useNavigate();
@@ -47,6 +48,12 @@ const OrdersList: React.FC = () => {
       deleteOrder(orderId);
     }
   };
+  
+  const handleShareOrder = (trackingCode: string) => {
+    const url = `${window.location.origin}/tracking?code=${trackingCode}`;
+    navigator.clipboard.writeText(url);
+    toast.success("Link de rastreamento copiado para a área de transferência!");
+  };
 
   const getStatusIcon = (order: any) => {
     const steps = order.tracking.steps;
@@ -64,6 +71,31 @@ const OrdersList: React.FC = () => {
         return <Truck className="h-5 w-5 text-blue-500" />;
       default:
         return <PackageCheck className="h-5 w-5 text-amber-500" />;
+    }
+  };
+
+  const getStatusText = (order: any) => {
+    const steps = order.tracking.steps;
+    
+    if (!steps || steps.length === 0) return "Aguardando processamento";
+    
+    const lastStep = steps[steps.length - 1];
+    
+    switch (lastStep.type) {
+      case "processed":
+        return "Processado";
+      case "forwarded":
+        return `Encaminhado para ${lastStep.city}`;
+      case "inTransit":
+        return `Em trânsito: ${lastStep.origin} → ${lastStep.destination}`;
+      case "cancelled":
+        return "Cancelado";
+      case "outForDelivery":
+        return `Saiu para entrega em ${lastStep.city}`;
+      case "delivered":
+        return "Entregue";
+      default:
+        return "Em processamento";
     }
   };
 
@@ -111,6 +143,7 @@ const OrdersList: React.FC = () => {
                     <TableHead>Cliente</TableHead>
                     <TableHead>Produto</TableHead>
                     <TableHead>Código de Rastreio</TableHead>
+                    <TableHead className="hidden md:table-cell">Atualização</TableHead>
                     <TableHead className="text-right">Preço</TableHead>
                     <TableHead className="w-[100px] text-right">Ações</TableHead>
                   </TableRow>
@@ -126,6 +159,9 @@ const OrdersList: React.FC = () => {
                       </TableCell>
                       <TableCell>{order.product.name}</TableCell>
                       <TableCell>{order.tracking.trackingCode}</TableCell>
+                      <TableCell className="hidden md:table-cell">
+                        {getStatusText(order)}
+                      </TableCell>
                       <TableCell className="text-right">
                         R$ {order.product.price.toFixed(2)}
                       </TableCell>
@@ -137,6 +173,17 @@ const OrdersList: React.FC = () => {
                             </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
+                            <DropdownMenuItem
+                              onClick={() => navigate(`/tracking?code=${order.tracking.trackingCode}`)}
+                            >
+                              Ver Rastreio
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                              onClick={() => handleShareOrder(order.tracking.trackingCode)}
+                            >
+                              <Share className="mr-2 h-4 w-4" />
+                              Compartilhar Link
+                            </DropdownMenuItem>
                             <DropdownMenuItem
                               onClick={() => handleEditOrder(order.id!)}
                             >

@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
@@ -20,14 +20,26 @@ const Login: React.FC = () => {
   const [password, setPassword] = useState("");
   const [isRegistering, setIsRegistering] = useState(false);
   const [name, setName] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const navigate = useNavigate();
-  const { login, register, isLoading } = useAuth();
+  const { login, register, isLoading, user } = useAuth();
+
+  useEffect(() => {
+    if (user) {
+      navigate('/orders');
+    }
+  }, [user, navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!email || !password) {
       toast.error("Por favor, preencha todos os campos obrigatórios.");
+      return;
+    }
+
+    if (isRegistering && password !== confirmPassword) {
+      toast.error("As senhas não correspondem.");
       return;
     }
 
@@ -38,10 +50,11 @@ const Login: React.FC = () => {
           return;
         }
         await register(name, email, password);
+        navigate("/orders");
       } else {
         await login(email, password);
+        navigate("/orders");
       }
-      navigate("/");
     } catch (error) {
       // Erro já tratado nos contextos
     }
@@ -99,6 +112,18 @@ const Login: React.FC = () => {
                 onChange={(e) => setPassword(e.target.value)}
               />
             </div>
+            {isRegistering && (
+              <div className="space-y-2">
+                <Label htmlFor="confirmPassword">Confirmar Senha</Label>
+                <Input
+                  id="confirmPassword"
+                  type="password"
+                  placeholder="••••••••"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                />
+              </div>
+            )}
             <Button type="submit" className="w-full" disabled={isLoading}>
               {isLoading
                 ? "Processando..."
