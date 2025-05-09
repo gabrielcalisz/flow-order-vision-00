@@ -34,8 +34,8 @@ const Index: React.FC = () => {
           Plataforma completa para rastreamento de pedidos
         </p>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full max-w-4xl mb-12">
-          <Card className="glass-card">
+        <div className="w-full max-w-4xl mb-12">
+  <Card className="glass-card w-full">
             <CardHeader>
               <CardTitle>Rastreamento de Pedido</CardTitle>
               <CardDescription>
