@@ -8,16 +8,9 @@ import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { format } from 'date-fns';
-import { CalendarIcon, Plus, Trash2 } from 'lucide-react';
-import { cn } from '@/lib/utils';
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+import { CalendarIcon, Plus, Trash2, Truck, Package, MapPin } from 'lucide-react';
+import { cn } from "@/lib/utils";
+import StatusModal from './StatusModal';
 import TrackingTimeline from './TrackingTimeline';
 
 interface TrackingFormProps {
@@ -25,81 +18,28 @@ interface TrackingFormProps {
   setTracking: React.Dispatch<React.SetStateAction<Tracking>>;
 }
 
-const brazilianCapitals: BrazilianCapital[] = [
-  "São Paulo", "Rio de Janeiro", "Brasília", "Salvador", "Fortaleza",
-  "Belo Horizonte", "Manaus", "Curitiba", "Recife", "Porto Alegre",
-  "Belém", "Goiânia", "Florianópolis"
-];
-
 const TrackingForm: React.FC<TrackingFormProps> = ({ tracking, setTracking }) => {
-  const [statusType, setStatusType] = useState<string>('');
-  const [cityOrigin, setCityOrigin] = useState<BrazilianCapital | ''>('');
-  const [cityDestination, setCityDestination] = useState<BrazilianCapital | ''>('');
-  const [deliveryCity, setDeliveryCity] = useState<string>('');
+  const [statusModalOpen, setStatusModalOpen] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setTracking(prev => ({ ...prev, [name]: value }));
+    if (name === 'trackingCode') {
+      // Convert tracking code to uppercase
+      setTracking(prev => ({ ...prev, [name]: value.toUpperCase() }));
+    } else {
+      setTracking(prev => ({ ...prev, [name]: value }));
+    }
   };
 
   const handleDateChange = (date: Date | undefined) => {
     setTracking(prev => ({ ...prev, estimatedDeliveryDate: date }));
   };
 
-  const addTrackingStep = () => {
-    if (!statusType) return;
-
-    let newStep: TrackingStep;
-
-    switch (statusType) {
-      case 'processed':
-        newStep = { type: 'processed' };
-        break;
-      case 'forwarded':
-        if (!cityDestination) {
-          alert('Selecione a cidade de destino');
-          return;
-        }
-        newStep = { type: 'forwarded', city: cityDestination as BrazilianCapital };
-        break;
-      case 'inTransit':
-        if (!cityOrigin || !cityDestination) {
-          alert('Selecione as cidades de origem e destino');
-          return;
-        }
-        newStep = { 
-          type: 'inTransit', 
-          origin: cityOrigin as BrazilianCapital, 
-          destination: cityDestination as BrazilianCapital 
-        };
-        break;
-      case 'cancelled':
-        newStep = { type: 'cancelled' };
-        break;
-      case 'outForDelivery':
-        if (!deliveryCity) {
-          alert('Informe a cidade de entrega');
-          return;
-        }
-        newStep = { type: 'outForDelivery', city: deliveryCity };
-        break;
-      case 'delivered':
-        newStep = { type: 'delivered' };
-        break;
-      default:
-        return;
-    }
-
+  const addTrackingStep = (newStep: TrackingStep) => {
     setTracking(prev => ({
       ...prev,
       steps: [...(prev.steps || []), newStep]
     }));
-
-    // Reset form
-    setStatusType('');
-    setCityOrigin('');
-    setCityDestination('');
-    setDeliveryCity('');
   };
 
   const removeTrackingStep = (index: number) => {
@@ -118,25 +58,33 @@ const TrackingForm: React.FC<TrackingFormProps> = ({ tracking, setTracking }) =>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
             <Label htmlFor="trackingCode">Código de Rastreio</Label>
-            <Input
-              id="trackingCode"
-              name="trackingCode"
-              value={tracking.trackingCode}
-              onChange={handleChange}
-              placeholder="BR1234567890"
-              required
-            />
+            <div className="relative">
+              <Truck className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                id="trackingCode"
+                name="trackingCode"
+                value={tracking.trackingCode}
+                onChange={handleChange}
+                placeholder="BR1234567890"
+                required
+                className="pl-9"
+              />
+            </div>
           </div>
           <div className="space-y-2">
             <Label htmlFor="company">Empresa de Entrega</Label>
-            <Input
-              id="company"
-              name="company"
-              value={tracking.company}
-              onChange={handleChange}
-              placeholder="Nome da transportadora"
-              required
-            />
+            <div className="relative">
+              <Package className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                id="company"
+                name="company"
+                value={tracking.company}
+                onChange={handleChange}
+                placeholder="Nome da transportadora"
+                required
+                className="pl-9"
+              />
+            </div>
           </div>
         </div>
 
@@ -159,13 +107,14 @@ const TrackingForm: React.FC<TrackingFormProps> = ({ tracking, setTracking }) =>
                 )}
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-auto p-0" align="start">
+            <PopoverContent className="w-auto p-0 pointer-events-auto" align="start">
               <Calendar
                 mode="single"
                 selected={tracking.estimatedDeliveryDate}
                 onSelect={handleDateChange}
                 initialFocus
                 disabled={(date) => date < new Date()}
+                className="p-3"
               />
             </PopoverContent>
           </Popover>
@@ -215,110 +164,28 @@ const TrackingForm: React.FC<TrackingFormProps> = ({ tracking, setTracking }) =>
           </div>
         )}
 
-        {/* Add New Tracking Step */}
+        {/* Add New Tracking Step Button */}
         <div className="border rounded-md p-4">
-          <h3 className="text-lg font-medium mb-4">Adicionar Atualização</h3>
-
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="statusType">Tipo de Status</Label>
-              <Select value={statusType} onValueChange={(value: string) => setStatusType(value)}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Selecione o tipo de status" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup>
-                    <SelectItem value="processed">Pedido Processado</SelectItem>
-                    <SelectItem value="forwarded">Encaminhado para Centro de Distribuição</SelectItem>
-                    <SelectItem value="inTransit">Em Trânsito</SelectItem>
-                    <SelectItem value="cancelled">Pedido Cancelado</SelectItem>
-                    <SelectItem value="outForDelivery">Saiu para Entrega</SelectItem>
-                    <SelectItem value="delivered">Entregue</SelectItem>
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
-            </div>
-
-            {statusType === 'forwarded' && (
-              <div className="space-y-2">
-                <Label htmlFor="cityDestination">Capital de Destino</Label>
-                <Select value={cityDestination} onValueChange={(value: BrazilianCapital) => setCityDestination(value)}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Selecione a capital" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectGroup>
-                      {brazilianCapitals.map((capital) => (
-                        <SelectItem key={capital} value={capital}>
-                          {capital}
-                        </SelectItem>
-                      ))}
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
-              </div>
-            )}
-
-            {statusType === 'inTransit' && (
-              <>
-                <div className="space-y-2">
-                  <Label htmlFor="cityOrigin">Capital de Origem</Label>
-                  <Select value={cityOrigin} onValueChange={(value: BrazilianCapital) => setCityOrigin(value)}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Selecione a capital de origem" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectGroup>
-                        {brazilianCapitals.map((capital) => (
-                          <SelectItem key={capital} value={capital}>
-                            {capital}
-                          </SelectItem>
-                        ))}
-                      </SelectGroup>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="cityDestination">Capital de Destino</Label>
-                  <Select value={cityDestination} onValueChange={(value: BrazilianCapital) => setCityDestination(value)}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Selecione a capital de destino" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectGroup>
-                        {brazilianCapitals.map((capital) => (
-                          <SelectItem key={capital} value={capital}>
-                            {capital}
-                          </SelectItem>
-                        ))}
-                      </SelectGroup>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </>
-            )}
-
-            {statusType === 'outForDelivery' && (
-              <div className="space-y-2">
-                <Label htmlFor="deliveryCity">Cidade de Entrega</Label>
-                <Input
-                  id="deliveryCity"
-                  value={deliveryCity}
-                  onChange={(e) => setDeliveryCity(e.target.value)}
-                  placeholder="Cidade onde será entregue"
-                />
-              </div>
-            )}
-
+          <div className="flex justify-between items-center">
+            <h3 className="text-lg font-medium">Adicionar Atualização</h3>
+          </div>
+          <div className="mt-4">
             <Button 
-              onClick={addTrackingStep}
+              onClick={() => setStatusModalOpen(true)}
               className="w-full"
               type="button"
             >
-              <Plus className="mr-2 h-4 w-4" /> Adicionar Atualização
+              <Plus className="mr-2 h-4 w-4" /> Adicionar Status de Rastreio
             </Button>
           </div>
         </div>
+
+        {/* Status Modal */}
+        <StatusModal 
+          isOpen={statusModalOpen}
+          onClose={() => setStatusModalOpen(false)}
+          onAddStatus={addTrackingStep}
+        />
       </CardContent>
     </Card>
   );

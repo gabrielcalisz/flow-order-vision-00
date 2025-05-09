@@ -9,20 +9,20 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import TrackingTimeline from '@/components/TrackingTimeline';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { Package, Search, Calendar, Truck } from 'lucide-react';
+import { Package, Search, Calendar, Truck, MapPin, Phone, User } from 'lucide-react';
 import { toast } from 'sonner';
 
 const TrackingPage: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const { fetchOrderByTrackingCode } = useOrders();
-  const [trackingCode, setTrackingCode] = useState(searchParams.get('code') || '');
+  const [trackingCode, setTrackingCode] = useState((searchParams.get('code') || '').toUpperCase());
   const [order, setOrder] = useState<Order | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     const code = searchParams.get('code');
     if (code) {
-      setTrackingCode(code);
+      setTrackingCode(code.toUpperCase());
       handleSearch(code);
     }
   }, [searchParams]);
@@ -36,7 +36,7 @@ const TrackingPage: React.FC = () => {
 
     setIsLoading(true);
     try {
-      const foundOrder = await fetchOrderByTrackingCode(searchCode);
+      const foundOrder = await fetchOrderByTrackingCode(searchCode.toUpperCase());
       setOrder(foundOrder);
       if (!foundOrder) {
         toast.error("Pedido não encontrado");
@@ -52,7 +52,7 @@ const TrackingPage: React.FC = () => {
   const handleFormSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     handleSearch();
-    setSearchParams({ code: trackingCode });
+    setSearchParams({ code: trackingCode.toUpperCase() });
   };
 
   const getLastStatusText = () => {
@@ -97,12 +97,15 @@ const TrackingPage: React.FC = () => {
         <Card className="glass-card mb-8">
           <CardContent className="pt-6">
             <form onSubmit={handleFormSubmit} className="flex space-x-2">
-              <Input
-                placeholder="Digite o código de rastreio"
-                value={trackingCode}
-                onChange={(e) => setTrackingCode(e.target.value)}
-                className="flex-grow"
-              />
+              <div className="relative flex-grow">
+                <Truck className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  placeholder="Digite o código de rastreio (ex: AB123BR)"
+                  value={trackingCode}
+                  onChange={(e) => setTrackingCode(e.target.value.toUpperCase())}
+                  className="pl-9"
+                />
+              </div>
               <Button type="submit" disabled={isLoading}>
                 {isLoading ? "Buscando..." : (
                   <>
@@ -125,7 +128,10 @@ const TrackingPage: React.FC = () => {
                       {getLastStatusText()}
                     </CardTitle>
                     <CardDescription>
-                      Código de Rastreio: {order.tracking.trackingCode}
+                      <div className="flex items-center">
+                        <Truck className="h-4 w-4 mr-1 text-muted-foreground" />
+                        Código de Rastreio: {order.tracking.trackingCode}
+                      </div>
                     </CardDescription>
                   </div>
                   <div className="text-right">
@@ -195,11 +201,20 @@ const TrackingPage: React.FC = () => {
                     <div>
                       <h3 className="text-lg font-medium mb-2">Destinatário</h3>
                       <div className="border rounded-md p-4 bg-background/50">
-                        <p className="font-medium">{order.customer.firstName} {order.customer.lastName}</p>
-                        <p className="text-sm text-muted-foreground">{order.customer.address}</p>
-                        <p className="text-sm text-muted-foreground">
-                          {order.customer.city}, {order.customer.state} - {order.customer.zipCode}
-                        </p>
+                        <div className="flex items-center mb-1">
+                          <User className="h-4 w-4 mr-2 text-muted-foreground" />
+                          <p className="font-medium">{order.customer.firstName} {order.customer.lastName}</p>
+                        </div>
+                        <div className="flex items-center mb-1">
+                          <MapPin className="h-4 w-4 mr-2 text-muted-foreground" />
+                          <p className="text-sm text-muted-foreground">{order.customer.address}</p>
+                        </div>
+                        <div className="flex items-center">
+                          <MapPin className="h-4 w-4 mr-2 text-muted-foreground opacity-0" />
+                          <p className="text-sm text-muted-foreground">
+                            {order.customer.city}, {order.customer.state} - {order.customer.zipCode}
+                          </p>
+                        </div>
                       </div>
                     </div>
                   </div>

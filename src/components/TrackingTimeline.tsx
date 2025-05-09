@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { TrackingStep } from '@/types';
-import { CheckCircle2, Circle, MapPin, PackageCheck, PackageX, Truck } from 'lucide-react';
+import { CheckCircle2, Circle, MapPin, PackageCheck, PackageX, Truck, AlertTriangle } from 'lucide-react';
 import { cn } from "@/lib/utils";
 
 interface TrackingTimelineProps {
@@ -40,7 +40,7 @@ const TrackingTimeline: React.FC<TrackingTimelineProps> = ({ steps, simplified =
               description = `Em trânsito de ${step.origin} para ${step.destination}`;
               break;
             case 'cancelled':
-              icon = <PackageX className="h-8 w-8 text-destructive" />;
+              icon = <AlertTriangle className="h-8 w-8 text-destructive" />;
               title = 'Pedido Cancelado';
               description = 'Seu pedido foi cancelado';
               break;
