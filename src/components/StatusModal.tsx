@@ -26,7 +26,8 @@ import {
   MapPin, 
   AlertTriangle,
   Package, 
-  PackageCheck 
+  PackageCheck,
+  Plus // Added the Plus icon import here
 } from 'lucide-react';
 
 interface StatusModalProps {
