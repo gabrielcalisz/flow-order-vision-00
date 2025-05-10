@@ -27,7 +27,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { format } from "date-fns";
-import { Package, MoreHorizontal, PackageCheck, CheckCheck, X, Truck, Share } from "lucide-react";
+import { Package, MoreHorizontal, PackageCheck, CheckCheck, X, Truck, Share, MessageSquare } from "lucide-react";
 import { toast } from "sonner";
 
 const OrdersList: React.FC = () => {
@@ -53,6 +53,42 @@ const OrdersList: React.FC = () => {
     const url = `${window.location.origin}/tracking?code=${trackingCode}`;
     navigator.clipboard.writeText(url);
     toast.success("Link de rastreamento copiado para a área de transferência!");
+  };
+
+  const handleSendToClient = (order: any) => {
+    // Validações
+    if (!order.customer.phone) {
+      toast.error("Telefone do cliente não está preenchido!");
+      return;
+    }
+
+    if (!order.tracking.trackingCode) {
+      toast.error("Código de rastreio não está disponível!");
+      return;
+    }
+
+    // Formatar o número de telefone (remover caracteres especiais)
+    const phone = order.customer.phone.replace(/\D/g, '');
+    
+    // Validar se o telefone está em um formato válido
+    if (!phone || phone.length < 10) {
+      toast.error("Formato de telefone inválido. Verifique se contém DDD e número.");
+      return;
+    }
+    
+    // Construir a URL de compartilhamento
+    const trackingUrl = `${window.location.origin}/tracking?code=${order.tracking.trackingCode}`;
+    
+    // Montar a mensagem
+    const message = `Olá, seu pedido já está sendo preparado e separado para entrega! A OutletUrbano agradece a preferência. Segue seu código de rastreio: ${order.tracking.trackingCode.toUpperCase()}. Clique aqui para acompanhar seu pedido: ${trackingUrl} e saber mais detalhes.`;
+    
+    // Construir o link para o WhatsApp
+    const whatsappLink = `https://api.whatsapp.com/send?phone=55${phone}&text=${encodeURIComponent(message)}`;
+    
+    // Abrir o link em uma nova janela
+    window.open(whatsappLink, "_blank");
+    
+    toast.success("Mensagem preparada para envio via WhatsApp!");
   };
 
   const getStatusIcon = (order: any) => {
@@ -183,6 +219,12 @@ const OrdersList: React.FC = () => {
                             >
                               <Share className="mr-2 h-4 w-4" />
                               Compartilhar Link
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                              onClick={() => handleSendToClient(order)}
+                            >
+                              <MessageSquare className="mr-2 h-4 w-4" />
+                              Enviar para Cliente
                             </DropdownMenuItem>
                             <DropdownMenuItem
                               onClick={() => handleEditOrder(order.id!)}
