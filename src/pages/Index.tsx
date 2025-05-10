@@ -63,10 +63,10 @@ const Index: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 w-full max-w-4xl">
           <Card>
             <CardHeader>
-              <CardTitle>Cadastro Rápido</CardTitle>
+              <CardTitle>Consulta Rápida</CardTitle>
             </CardHeader>
             <CardContent>
-              <p>Cadastre pedidos de forma simples e intuitiva, com todos os dados necessários.</p>
+              <p>Encontre informações completas do seu pedido em poucos segundos.</p>
             </CardContent>
           </Card>
           
@@ -81,10 +81,10 @@ const Index: React.FC = () => {
           
           <Card>
             <CardHeader>
-              <CardTitle>Compartilhamento</CardTitle>
+              <CardTitle>Histórico de Movimentações</CardTitle>
             </CardHeader>
             <CardContent>
-              <p>Compartilhe facilmente links de rastreamento com seus clientes.</p>
+              <p>Veja todas as etapas que o pedido já percorreu, desde a postagem até a entrega.</p>
             </CardContent>
           </Card>
         </div>
