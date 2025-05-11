@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -6,27 +5,21 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Package, Search } from 'lucide-react';
-
 const Index: React.FC = () => {
-  const { user } = useAuth();
+  const {
+    user
+  } = useAuth();
   const navigate = useNavigate();
   const [trackingCode, setTrackingCode] = React.useState('');
-
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (trackingCode.trim()) {
       navigate(`/tracking?code=${trackingCode}`);
     }
   };
-
-  return (
-    <div className="container max-w-6xl mx-auto py-12 px-4">
+  return <div className="container max-w-6xl mx-auto py-12 px-4">
       <div className="flex flex-col items-center justify-center text-center py-12">
-        <img 
-          src="/lovable-uploads/048c0548-c909-453f-9fcc-95a63daf7f3e.png" 
-          alt="Logo" 
-          className="h-24 mb-6"
-        />
+        <img src="/lovable-uploads/048c0548-c909-453f-9fcc-95a63daf7f3e.png" alt="Logo" className="h-24 mb-6" />
         <h1 className="text-4xl md:text-5xl font-bold mb-4">
           Sistema de Entregas
         </h1>
@@ -44,12 +37,8 @@ const Index: React.FC = () => {
             </CardHeader>
             <CardContent>
               <form onSubmit={handleSearch} className="flex space-x-2">
-                <Input
-                  placeholder="Digite o código de rastreio"
-                  value={trackingCode}
-                  onChange={(e) => setTrackingCode(e.target.value)}
-                />
-                <Button type="submit">
+                <Input placeholder="Digite o código de rastreio" value={trackingCode} onChange={e => setTrackingCode(e.target.value)} />
+                <Button type="submit" className="bg-sky-900 hover:bg-sky-800">
                   <Search className="mr-2 h-4 w-4" />
                   Rastrear
                 </Button>
@@ -89,8 +78,6 @@ const Index: React.FC = () => {
           </Card>
         </div>
       </div>
-    </div>
-  );
+    </div>;
 };
-
 export default Index;
