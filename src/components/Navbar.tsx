@@ -17,7 +17,7 @@ const Navbar: React.FC = () => {
       <div className="flex items-center justify-between w-full max-w-7xl mx-auto">
         <div className="flex items-center space-x-2">
           <Link to="/" className="flex items-center gap-2">
-            <img src="/lovable-uploads/048c0548-c909-453f-9fcc-95a63daf7f3e.png" alt="Logo" className="h-8" />
+            <img alt="Logo" className="h-8 object-contain" src="/lovable-uploads/504e8cd6-db66-42f5-82aa-d26d2da4a099.png" />
             {/* Removido o texto FastTracker, mantendo apenas a logo */}
           </Link>
         </div>
