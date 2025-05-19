@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useOrders } from '@/contexts/OrderContext';
@@ -15,7 +14,7 @@ import { toast } from 'sonner';
 const TrackingPage: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const { fetchOrderByTrackingCode } = useOrders();
-  const [trackingCode, setTrackingCode] = useState((searchParams.get('code') || '').toUpperCase());
+  const [trackingCode, setTrackingCode] = useState((searchParams.get('code') || '').trim().toUpperCase());
   const [order, setOrder] = useState<Order | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [searchAttempted, setSearchAttempted] = useState(false);
@@ -23,8 +22,9 @@ const TrackingPage: React.FC = () => {
   useEffect(() => {
     const code = searchParams.get('code');
     if (code) {
-      setTrackingCode(code.toUpperCase());
-      handleSearch(code);
+      const normalizedCode = code.trim().toUpperCase();
+      setTrackingCode(normalizedCode);
+      handleSearch(normalizedCode);
     }
   }, [searchParams]);
 
@@ -35,16 +35,22 @@ const TrackingPage: React.FC = () => {
       return;
     }
 
+    const normalizedCode = searchCode.trim().toUpperCase();
+    console.log("Normalized tracking code for search:", normalizedCode);
+
     setIsLoading(true);
     setSearchAttempted(true);
     
     try {
-      console.log("Searching for tracking code:", searchCode.toUpperCase());
-      const foundOrder = await fetchOrderByTrackingCode(searchCode.toUpperCase());
+      console.log("Searching for tracking code:", normalizedCode);
+      const foundOrder = await fetchOrderByTrackingCode(normalizedCode);
       console.log("Search result:", foundOrder);
+      
       setOrder(foundOrder);
       if (!foundOrder) {
         toast.error("Pedido não encontrado");
+      } else {
+        toast.success("Pedido encontrado com sucesso!");
       }
     } catch (error) {
       console.error("Error fetching order:", error);
@@ -57,8 +63,9 @@ const TrackingPage: React.FC = () => {
 
   const handleFormSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    const normalizedCode = trackingCode.trim().toUpperCase();
     handleSearch();
-    setSearchParams({ code: trackingCode.toUpperCase() });
+    setSearchParams({ code: normalizedCode });
   };
 
   const getLastStatusText = () => {

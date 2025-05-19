@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -5,18 +6,29 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Package, Search } from 'lucide-react';
+import { toast } from 'sonner';
+
 const Index: React.FC = () => {
   const {
     user
   } = useAuth();
   const navigate = useNavigate();
   const [trackingCode, setTrackingCode] = React.useState('');
+  
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    if (trackingCode.trim()) {
-      navigate(`/tracking?code=${trackingCode}`);
+    
+    // Normalize the tracking code: trim spaces and convert to uppercase
+    const normalizedCode = trackingCode.trim().toUpperCase();
+    
+    if (normalizedCode) {
+      console.log("Navigating to tracking page with code:", normalizedCode);
+      navigate(`/tracking?code=${normalizedCode}`);
+    } else {
+      toast.error("Digite um código de rastreio válido");
     }
   };
+  
   return <div className="container max-w-6xl mx-auto py-12 px-4">
       <div className="flex flex-col items-center justify-center text-center py-12">
         <img alt="Logo" className="h-24 mb-6 object-cover" src="/lovable-uploads/504e8cd6-db66-42f5-82aa-d26d2da4a099.png" />
@@ -28,7 +40,7 @@ const Index: React.FC = () => {
         </p>
 
         <div className="w-full max-w-4xl mb-12">
-  <Card className="glass-card w-full">
+          <Card className="glass-card w-full">
             <CardHeader>
               <CardTitle>Rastreamento de Pedido</CardTitle>
               <CardDescription>
@@ -37,7 +49,11 @@ const Index: React.FC = () => {
             </CardHeader>
             <CardContent>
               <form onSubmit={handleSearch} className="flex space-x-2">
-                <Input placeholder="Digite o código de rastreio" value={trackingCode} onChange={e => setTrackingCode(e.target.value)} />
+                <Input 
+                  placeholder="Digite o código de rastreio" 
+                  value={trackingCode} 
+                  onChange={e => setTrackingCode(e.target.value)}
+                />
                 <Button type="submit" className="bg-sky-900 hover:bg-sky-800">
                   <Search className="mr-2 h-4 w-4" />
                   Rastrear
@@ -45,7 +61,6 @@ const Index: React.FC = () => {
               </form>
             </CardContent>
           </Card>
-
          
         </div>
 

@@ -126,11 +126,14 @@ export const OrderProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const fetchOrderByTrackingCode = async (trackingCode: string): Promise<Order | null> => {
     try {
       console.log("Fetching order with tracking code:", trackingCode);
+      // First normalize the tracking code again to ensure consistency
+      const normalizedCode = trackingCode.trim().toUpperCase();
       
+      // ILIKE performs a case-insensitive search
       const { data, error } = await supabase
         .from('orders')
         .select('*, tracking_steps(*)')
-        .ilike('tracking_code', trackingCode)
+        .ilike('tracking_code', normalizedCode)
         .single();
 
       if (error) {
