@@ -84,7 +84,7 @@ const TrackingPage: React.FC = () => {
       <div className="max-w-4xl mx-auto">
         <div className="flex flex-col items-center justify-center text-center mb-8">
           <img 
-            src="/lovable-uploads/048c0548-c909-453f-9fcc-95a63daf7f3e.png" 
+            src="/lovable-uploads/504e8cd6-db66-42f5-82aa-d26d2da4a099.png" 
             alt="Logo" 
             className="h-16 mb-4"
           />
