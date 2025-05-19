@@ -125,14 +125,25 @@ export const OrderProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   const fetchOrderByTrackingCode = async (trackingCode: string): Promise<Order | null> => {
     try {
+      console.log("Fetching order with tracking code:", trackingCode);
+      
       const { data, error } = await supabase
         .from('orders')
         .select('*, tracking_steps(*)')
-        .eq('tracking_code', trackingCode)
+        .ilike('tracking_code', trackingCode)
         .single();
 
-      if (error) throw error;
+      if (error) {
+        console.error("Supabase error:", error);
+        if (error.code === 'PGRST116') {
+          // This is the "no rows returned" error code
+          return null;
+        }
+        throw error;
+      }
 
+      console.log("Data returned from Supabase:", data);
+      
       if (data) {
         const formattedOrder: Order = {
           id: data.id,

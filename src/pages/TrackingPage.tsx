@@ -18,6 +18,7 @@ const TrackingPage: React.FC = () => {
   const [trackingCode, setTrackingCode] = useState((searchParams.get('code') || '').toUpperCase());
   const [order, setOrder] = useState<Order | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [searchAttempted, setSearchAttempted] = useState(false);
 
   useEffect(() => {
     const code = searchParams.get('code');
@@ -35,8 +36,12 @@ const TrackingPage: React.FC = () => {
     }
 
     setIsLoading(true);
+    setSearchAttempted(true);
+    
     try {
+      console.log("Searching for tracking code:", searchCode.toUpperCase());
       const foundOrder = await fetchOrderByTrackingCode(searchCode.toUpperCase());
+      console.log("Search result:", foundOrder);
       setOrder(foundOrder);
       if (!foundOrder) {
         toast.error("Pedido não encontrado");
@@ -44,6 +49,7 @@ const TrackingPage: React.FC = () => {
     } catch (error) {
       console.error("Error fetching order:", error);
       toast.error("Erro ao buscar pedido");
+      setOrder(null);
     } finally {
       setIsLoading(false);
     }
@@ -222,7 +228,7 @@ const TrackingPage: React.FC = () => {
               </CardContent>
             </Card>
           </div>
-        ) : searchParams.get('code') ? (
+        ) : searchAttempted ? (
           <Card className="text-center py-12">
             <CardContent className="flex flex-col items-center justify-center">
               <Truck className="h-16 w-16 text-muted-foreground mb-4" />
