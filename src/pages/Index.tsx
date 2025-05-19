@@ -19,7 +19,7 @@ const Index: React.FC = () => {
   };
   return <div className="container max-w-6xl mx-auto py-12 px-4">
       <div className="flex flex-col items-center justify-center text-center py-12">
-        <img alt="Logo" className="h-24 mb-6 object-cover" src="/lovable-uploads/e0ea74c5-e9cd-4862-992d-1feebafc99be.png" />
+        <img alt="Logo" className="h-24 mb-6 object-cover" src="/lovable-uploads/504e8cd6-db66-42f5-82aa-d26d2da4a099.png" />
         <h1 className="text-4xl md:text-5xl font-bold mb-4">
           Sistema de Entregas
         </h1>
