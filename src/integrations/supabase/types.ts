@@ -9,7 +9,116 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      orders: {
+        Row: {
+          created_at: string
+          customer_address: string
+          customer_city: string
+          customer_cpf: string
+          customer_first_name: string
+          customer_last_name: string
+          customer_phone: string
+          customer_state: string
+          customer_zip_code: string
+          estimated_delivery_date: string | null
+          free_shipping: boolean
+          id: string
+          product_image_url: string | null
+          product_name: string
+          product_price: number
+          product_quantity: number
+          shipping_price: number
+          tracking_code: string
+          tracking_company: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          customer_address: string
+          customer_city: string
+          customer_cpf: string
+          customer_first_name: string
+          customer_last_name: string
+          customer_phone: string
+          customer_state: string
+          customer_zip_code: string
+          estimated_delivery_date?: string | null
+          free_shipping?: boolean
+          id?: string
+          product_image_url?: string | null
+          product_name: string
+          product_price?: number
+          product_quantity?: number
+          shipping_price?: number
+          tracking_code: string
+          tracking_company: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          customer_address?: string
+          customer_city?: string
+          customer_cpf?: string
+          customer_first_name?: string
+          customer_last_name?: string
+          customer_phone?: string
+          customer_state?: string
+          customer_zip_code?: string
+          estimated_delivery_date?: string | null
+          free_shipping?: boolean
+          id?: string
+          product_image_url?: string | null
+          product_name?: string
+          product_price?: number
+          product_quantity?: number
+          shipping_price?: number
+          tracking_code?: string
+          tracking_company?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      tracking_steps: {
+        Row: {
+          created_at: string
+          delivery_city: string | null
+          destination_city: string | null
+          id: string
+          order_id: string
+          origin_city: string | null
+          status_type: string
+        }
+        Insert: {
+          created_at?: string
+          delivery_city?: string | null
+          destination_city?: string | null
+          id?: string
+          order_id: string
+          origin_city?: string | null
+          status_type: string
+        }
+        Update: {
+          created_at?: string
+          delivery_city?: string | null
+          destination_city?: string | null
+          id?: string
+          order_id?: string
+          origin_city?: string | null
+          status_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tracking_steps_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
