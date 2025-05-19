@@ -65,7 +65,7 @@ const Login: React.FC = () => {
       <Card className="w-full max-w-md glass-card">
         <CardHeader className="space-y-4 items-center text-center">
           <img 
-            src="/lovable-uploads/048c0548-c909-453f-9fcc-95a63daf7f3e.png" 
+            src="/lovable-uploads/504e8cd6-db66-42f5-82aa-d26d2da4a099.png" 
             alt="Logo" 
             className="h-16 mx-auto"
           />
